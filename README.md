@@ -34,6 +34,10 @@ Materiais Necessários:
 Conclusão:
 Este projeto visa fornecer uma solução acessível e eficaz para famílias agrícolas, capacitando-as com informações meteorológicas precisas e facilitando a gestão de suas plantações. A combinação de tecnologia e automação promete melhorar a produtividade e a sustentabilidade na agricultura familiar.
 
-## Fase Beta design:
+## Fase Beta Simulador:
 
-<img src="https://babbf25fa0.cbaul-cdnwnd.com/ca777225d6fbd038fc560b5e3ff1f1e0/200000012-e1e71e1e74/fase%20beta%20simulador.png?ph=babbf25fa0" alt="simulador beta" width="2000"/>
+<img src="https://babbf25fa0.cbaul-cdnwnd.com/ca777225d6fbd038fc560b5e3ff1f1e0/200000012-e1e71e1e74/fase%20beta%20simulador.png?ph=babbf25fa0" alt="simulador beta" width="1000"/>
+
+## Fase Beta Prototipagem:
+
+<img src="https://babbf25fa0.cbaul-cdnwnd.com/ca777225d6fbd038fc560b5e3ff1f1e0/200000028-933ec933ee/imagem_2024-09-15_172730375.png?ph=babbf25fa0" alt="simulador beta" width="1000"/>
