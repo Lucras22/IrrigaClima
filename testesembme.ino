@@ -97,14 +97,14 @@ void loop() {
   Serial.println("Dados dos Sensores:");
   Serial.printf("Chuva: %s\n", isRaining ? "Chuva detectada" : "Não está chovendo");
   Serial.printf("Umidade do Solo: %.2f%%\n", soilMoisturePercentage);
-  Serial.printf("Índice UV: %d\n", uv);
+  Serial.printf("Índice UV: %d\n \n", uv);
   Serial.println(irrigationStatus);
 
   // Montando a mensagem para o Telegram
   String message = "Dados IrrigaClima:\n \n";
   message += isRaining ? "Chuva: Chuva detectada\n" : "Chuva: Não está chovendo\n";
   message += "Umidade do Solo: " + String(soilMoisturePercentage) + "%\n";
-  message += "Índice UV: " + String(uv) + "\n";
+  message += "Índice UV: " + String(uv) + "\n \n";
   message += irrigationStatus;
 
   // Enviando os dados para o bot no Telegram
