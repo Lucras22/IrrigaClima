@@ -1,8 +1,10 @@
+#include <WiFi.h>
+#include <HTTPClient.h>
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BME280.h>
-#include <WiFi.h>
-#include <HTTPClient.h>
+
+#define SEALEVELPRESSURE_HPA (1013.25)
 
 // Definições dos pinos
 #define RAIN_SENSOR_PIN 34
@@ -10,21 +12,21 @@
 #define UV_SENSOR_PIN 25
 #define RELAY_PIN 27
 
-// Configuração do sensor BME280
-Adafruit_BME280 bme;
-#define SEALEVELPRESSURE_HPA (1013.25)
-
 // Configuração do Telegram
-const String BOT_TOKEN = "7216059515:AAEDxW2u7SX1LDhAnxY75iOgoUomGTyzTCU";
-const String CHAT_ID = "7003158288"; // ID do chat ou grupo para enviar os dados
+const String botToken = "7216059515:AAEDxW2u7SX1LDhAnxY75iOgoUomGTyzTCU";
+const String chatId = "7003158288"; // ID do chat ou grupo para enviar os dados
 
 // Configuração do WiFi
 const char* ssid = "Lucas Galindo | Poco C65"; 
 const char* password = "lucras22"; 
 
+// Configuração do sensor BME280
+Adafruit_BME280 bme;
+unsigned long delayTime;
+
 void setup() {
   Serial.begin(115200);
-
+  
   // Conectando ao WiFi
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
@@ -33,9 +35,10 @@ void setup() {
   }
   Serial.println("WiFi conectado");
 
-  // Iniciando o sensor BME280
-  if (!bme.begin(0x76)) {
-    Serial.println("Falha ao inicializar o BME280.");
+  // Inicializando BME280
+  bool status = bme.begin(0x76);  
+  if (!status) {
+    Serial.println("Could not find a valid BME280 sensor, check wiring!");
     while (1);
   }
 
@@ -53,12 +56,8 @@ void loop() {
   int soilMoistureValue = analogRead(SOIL_MOISTURE_PIN);
   int leitura_porta = analogRead(UV_SENSOR_PIN);
 
-  float temperature = bme.readTemperature();
-  float humidity = bme.readHumidity();
-  float pressure = bme.readPressure() / 100.0F;
-
   // Convertendo a umidade do solo para uma porcentagem
-  float soilMoisturePercentage = map(soilMoistureValue, 0, 4095, 0, 100);
+  float soilMoisturePercentage = map(soilMoistureValue, 0, 4095, 100,  0);
 
   // Verificando se está chovendo
   bool isRaining = (rainSensorValue == LOW); // LOW indica que está chovendo
@@ -104,16 +103,6 @@ void loop() {
     digitalWrite(RELAY_PIN, LOW);  // Desativa a irrigação se o solo estiver úmido
     irrigationStatus = "Irrigação desativada: Solo com umidade suficiente.";
   }
-  // Verifica condições de temperatura e umidade do ar
-  else if (temperature < 25 || humidity > 60) {
-    digitalWrite(RELAY_PIN, LOW);  // Desativa a irrigação se as condições de temperatura e umidade não exigirem
-    irrigationStatus = "Irrigação desativada: Temperatura baixa ou umidade do ar alta.";
-  }
-  // Verifica se o índice UV é 7 ou mais
-  else if (uv >= 7) {
-    digitalWrite(RELAY_PIN, HIGH);  // Ativa a irrigação se o índice UV for 7 ou mais
-    irrigationStatus = "Irrigação ativada: Índice UV elevado.";
-  }
   // Condições normais para ativar a irrigação
   else {
     digitalWrite(RELAY_PIN, HIGH);  // Ativa a irrigação se todas as condições forem atendidas
@@ -125,42 +114,70 @@ void loop() {
   Serial.printf("Chuva: %s\n", isRaining ? "Chuva detectada" : "Não está chovendo");
   Serial.printf("Umidade do Solo: %.2f%%\n", soilMoisturePercentage);
   Serial.printf("Índice UV: %d\n", uv);
-  Serial.printf("Temperatura: %.2f°C\n", temperature);
-  Serial.printf("Umidade: %.2f%%\n", humidity);
-  Serial.printf("Pressão: %.2f hPa\n", pressure);
   Serial.println(irrigationStatus);
 
+  // Exibindo os dados do BME280
+  Serial.print("Temperature = ");
+  Serial.print(bme.readTemperature());
+  Serial.println(" *C");
+
+  Serial.print("Pressure = ");
+  Serial.print(bme.readPressure() / 100.0F);
+  Serial.println(" hPa");
+
+  Serial.print("Approx. Altitude = ");
+  Serial.print(bme.readAltitude(SEALEVELPRESSURE_HPA));
+  Serial.println(" m");
+
+  Serial.print("Humidity = ");
+  Serial.print(bme.readHumidity());
+  Serial.println(" %");
+
+  Serial.println();
+
+  // Montando a mensagem para o Telegram
+  String message = "Dados IrrigaClima:\n \n";
+  message += isRaining ? "Chuva: Chuva detectada\n" : "Chuva: Não está chovendo\n";
+  message += "Umidade do Solo: " + String(soilMoisturePercentage) + "%\n";
+  message += "Índice UV: " + String(uv) + "\n";
+  message += "Temperatura: " + String(bme.readTemperature()) + " *C\n";
+  message += "Pressão: " + String(bme.readPressure() / 100.0F) + " hPa\n";
+  message += "Altitude Aproximada: " + String(bme.readAltitude(SEALEVELPRESSURE_HPA)) + " m\n";
+  message += "Umidade: " + String(bme.readHumidity()) + " %\n\n";
+  message += irrigationStatus + "\n";
+
   // Enviando os dados para o bot no Telegram
-  enviarDadosTelegram(isRaining, soilMoisturePercentage, uv, temperature, humidity, pressure, irrigationStatus);
+  sendMessage(message);
 
   delay(10000); // Espera 10 segundos para enviar os dados novamente
 }
 
-void enviarDadosTelegram(bool isRaining, float soilMoisture, int uv, float temp, float hum, float pressure, String irrigationStatus) {
+// Função para enviar mensagem ao Telegram
+void sendMessage(String message) {
   if (WiFi.status() == WL_CONNECTED) {
     HTTPClient http;
-
-    String mensagem = "Dados IrrigaClima:\n \n";
-    mensagem += isRaining ? "Chuva: Chuva detectada\n" : "Chuva: Não está chovendo\n";
-    mensagem += "Umidade do Solo: " + String(soilMoisture) + "%\n";
-    mensagem += "Índice UV: " + String(uv) + "\n";
-    mensagem += "Temperatura: " + String(temp) + "°C\n";
-    mensagem += "Umidade: " + String(hum) + "%\n";
-    mensagem += "Pressão: " + String(pressure) + " hPa\n";
-    mensagem += irrigationStatus;
-
-    String url = "https://api.telegram.org/bot" + BOT_TOKEN + "/sendMessage?chat_id=" + CHAT_ID + "&text=" + mensagem;
+    String url = "https://api.telegram.org/bot" + botToken + "/sendMessage";
+    
     http.begin(url);
-    int httpResponseCode = http.GET();
+    http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+    
+    // Montando os parâmetros da requisição POST
+    String postData = "chat_id=" + chatId + "&text=" + message;
+    
+    // Enviando a requisição
+    int httpResponseCode = http.POST(postData);
     
     if (httpResponseCode > 0) {
-      Serial.println("Dados enviados para o Telegram com sucesso.");
+      String response = http.getString();
+      Serial.println("Código de resposta: " + String(httpResponseCode));
+      Serial.println("Resposta: " + response);
     } else {
-      Serial.printf("Erro ao enviar mensagem: %d\n", httpResponseCode);
+      Serial.print("Erro na requisição: ");
+      Serial.println(httpResponseCode);
     }
-
+    
     http.end();
   } else {
-    Serial.println("Erro de conexão WiFi.");
+    Serial.println("WiFi desconectado");
   }
 }
