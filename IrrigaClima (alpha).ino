@@ -119,7 +119,7 @@ void loop() {
   // Exibindo os dados do BME280
   Serial.print("Temperature = ");
   Serial.print(bme.readTemperature());
-  Serial.println(" *C");
+  Serial.println(" °C");
 
   Serial.print("Pressure = ");
   Serial.print(bme.readPressure() / 100.0F);
