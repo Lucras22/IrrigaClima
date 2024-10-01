@@ -140,7 +140,7 @@ void loop() {
   message += isRaining ? "Chuva: Chuva detectada\n" : "Chuva: Não está chovendo\n";
   message += "Umidade do Solo: " + String(soilMoisturePercentage) + "%\n";
   message += "Índice UV: " + String(uv) + "\n";
-  message += "Temperatura: " + String(bme.readTemperature()) + " *C\n";
+  message += "Temperatura: " + String(bme.readTemperature()) + " °C\n";
   message += "Pressão: " + String(bme.readPressure() / 100.0F) + " hPa\n";
   message += "Altitude Aproximada: " + String(bme.readAltitude(SEALEVELPRESSURE_HPA)) + " m\n";
   message += "Umidade: " + String(bme.readHumidity()) + " %\n\n";
