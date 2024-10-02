@@ -57,7 +57,7 @@ void loop() {
   int leitura_porta = analogRead(UV_SENSOR_PIN);
 
   // Convertendo a umidade do solo para uma porcentagem
-  float soilMoisturePercentage = map(soilMoistureValue, 0, 4095, 100,  0);
+  float soilMoisturePercentage = map(soilMoistureValue, 0, 4095, 0,  100);
 
   // Verificando se está chovendo
   bool isRaining = (rainSensorValue == LOW); // LOW indica que está chovendo
