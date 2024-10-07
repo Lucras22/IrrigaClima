@@ -40,4 +40,11 @@ Este projeto visa fornecer uma solução acessível e eficaz para famílias agr�
 
 ## Fase Beta Prototipagem:
 
-<img src="https://babbf25fa0.cbaul-cdnwnd.com/ca777225d6fbd038fc560b5e3ff1f1e0/200000028-933ec933ee/imagem_2024-09-15_172730375.png?ph=babbf25fa0" alt="simulador beta" width="1000"/>
+<img src="https://babbf25fa0.cbaul-cdnwnd.com/ca777225d6fbd038fc560b5e3ff1f1e0/200000028-933ec933ee/imagem_2024-09-15_172730375.png?ph=babbf25fa0" alt="Prototipagem beta" width="1000"/>
+
+
+
+## Fase Avançada Prototipagem:
+
+<img src="https://github.com/user-attachments/assets/3f9993af-c654-4991-8046-f82a45742108" alt="Prototipagem avançada" width="500"/>
+
