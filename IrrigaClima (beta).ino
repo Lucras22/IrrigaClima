@@ -1,20 +1,21 @@
+// Incluindo as bibliotecas
 #include <WiFi.h>
 #include <DHT.h>
 
 
-// Definindo o tipo de sensor DHT e o pino ao qual está conectado (DHT11 no pino 4)
+// tipo de sensor dht e o pino
 #define DHTPIN 4
 #define DHTTYPE DHT11
 DHT dht(DHTPIN, DHTTYPE);
 
 
-// Pinos dos sensores e da bomba d'água
+// definindo nome para os pinos 
 const int rainSensorPin = 33;
 const int soilMoisturePin = 34;
 const int pumpPin = 26;
 
 
-// Constantes para configuração do WiFi
+// nome e senha do wifi
 const char* ssid = "ESP32";
 const char* password = "12345678";
 
@@ -31,36 +32,36 @@ const long timeoutTime = 2000;
 
 
 void setup() {
-  // Inicializa o monitor serial
+  // iniciando o monitor serial
   Serial.begin(115200);
 
 
   while (!Serial) {
-    ; // Aguarda conexão
+    ; // aguando a inicialização
   }
   Serial.println("Serial inicializado");
 
 
-  // Configurar o ESP32 como um ponto de acesso Wi-Fi
+  // transformando o esp em um ponto de acesso
   WiFi.softAP(ssid, password);
 
-
+// obtendo ip da esp
   IPAddress IP = WiFi.softAPIP();
   Serial.print("Endereço IP do ponto de acesso: ");
   Serial.println(IP);
 
 
-  // Inicializa os pinos
-  pinMode(rainSensorPin, INPUT_PULLUP); // Configura o pino com pull-up
+ // iniciando a funcionalidade dos pinos
+  pinMode(rainSensorPin, INPUT_PULLUP); 
   pinMode(soilMoisturePin, INPUT);
   pinMode(pumpPin, OUTPUT);
 
 
-  // Inicializa o sensor DHT
+  // Iniciar dht
   dht.begin();
 
 
-  // Inicializa o servidor
+  // iniciando o webserver
   server.begin();
   Serial.println("Servidor iniciado");
 }
@@ -88,14 +89,14 @@ void loop() {
             client.println("Connection: close");
             client.println();
 
-
+            // coleta dos dados dos sensores
             float temperature = getTemperature();
             float humidity = getHumidity();
             String rainStatus = isRaining() ? "Com Chuva" : "Sem Chuva";
             int soilMoisture = getSoilMoisture();
             String pumpStatus = digitalRead(pumpPin) == HIGH ? "Ligada" : "Desligada";
 
-
+            // HTML e CSS do site com um js para atualizar sozinho
             client.println("<!DOCTYPE html><html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
             client.println("<link rel=\"icon\" href=\"data:,\">");
             client.println("<style>html { font-family: Arial; display: inline-block; margin: 0px auto; text-align: center;}");
@@ -136,14 +137,14 @@ void loop() {
   }
 
 
-  // Lê os sensores e controla a bomba d'água periodicamente
+  // ler os dados dos sensores e controlar a bomba d'agua
   float temperature = getTemperature();
   float humidity = getHumidity();
   int soilMoisture = getSoilMoisture();
   bool raining = isRaining();
 
 
-  // Exibe os dados dos sensores no Serial Monitor
+  // mostra os dados dos sensores no monitor serial
   Serial.print("Temperatura: ");
   Serial.print(temperature);
   Serial.println(" °C");
@@ -157,7 +158,7 @@ void loop() {
   Serial.println(" %");
 
 
-  // Controla a bomba d'água com base na umidade do solo e no estado do sensor de chuva
+  // condições para ligar a irrigação com base nos dados do solo
   if (soilMoisture < 20) {
     digitalWrite(pumpPin, HIGH); // Ativa a bomba d'água
     Serial.println("Bomba de Irrigacao: Ligada");
@@ -167,7 +168,7 @@ void loop() {
   }
 
 
-  // Atraso para leituras periódicas (por exemplo, a cada 10 segundos)
+  // ler a cada 10 segundos
   delay(10000);
 }
 
@@ -179,13 +180,13 @@ float getTemperature() {
 
 
 float getHumidity() {
-  // Lê a umidade do sensor DHT
+  // umidade do sensor DHT
   return dht.readHumidity();
 }
 
 
 int getSoilMoisture() {
-  // Lê a umidade do solo (HL69)
+  // umidade do solo sensor HL69
   int sensorValue = analogRead(soilMoisturePin);
   // Converte para porcentagem de umidade do solo (0-100%)
   int moisturePercent = map(sensorValue, 0, 4095, 100, 0);
@@ -194,9 +195,9 @@ int getSoilMoisture() {
 
 
 bool isRaining() {
-  // Lê o estado do sensor de chuva e retorna true se estiver chovendo
+  // verifica a presença de chuva e retorna um booleano se tem ou não chuva
   int rainValue = digitalRead(rainSensorPin);
-  return rainValue == HIGH; // Assumindo que LOW indica presença de água (chuva)
+  return rainValue == HIGH; 
 }
 
 
