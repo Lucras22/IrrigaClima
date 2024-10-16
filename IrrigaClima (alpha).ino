@@ -1,3 +1,4 @@
+// incluindo bibliotecas
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <Wire.h>
@@ -6,17 +7,17 @@
 
 #define SEALEVELPRESSURE_HPA (1013.25)
 
-// Definições dos pinos
+// definindo os nomes dos pinos
 #define RAIN_SENSOR_PIN 34
 #define SOIL_MOISTURE_PIN 32
 #define UV_SENSOR_PIN 25
 #define RELAY_PIN 27
 
-// Configuração do Telegram
+// token e id do bot do Telegram
 const String botToken = "7216059515:AAEDxW2u7SX1LDhAnxY75iOgoUomGTyzTCU";
 const String chatId = "7003158288"; // ID do chat ou grupo para enviar os dados
 
-// Configuração do WiFi
+// Nome e Senha do WiFi
 const char* ssid = "Lucas Galindo | Poco C65"; 
 const char* password = "lucras22"; 
 
@@ -47,7 +48,7 @@ void setup() {
   pinMode(SOIL_MOISTURE_PIN, INPUT);
   pinMode(UV_SENSOR_PIN, INPUT);
   pinMode(RELAY_PIN, OUTPUT);
-  digitalWrite(RELAY_PIN, LOW); // Relé desligado inicialmente
+  digitalWrite(RELAY_PIN, LOW); 
 }
 
 void loop() {
@@ -117,18 +118,19 @@ void loop() {
   Serial.println(irrigationStatus);
 
   // Exibindo os dados do BME280
+  // Temperatura
   Serial.print("Temperature = ");
   Serial.print(bme.readTemperature());
   Serial.println(" °C");
-
+  // Pressão
   Serial.print("Pressure = ");
   Serial.print(bme.readPressure() / 100.0F);
   Serial.println(" hPa");
-
+  // Altitude
   Serial.print("Approx. Altitude = ");
   Serial.print(bme.readAltitude(SEALEVELPRESSURE_HPA));
   Serial.println(" m");
-
+  // Umidade
   Serial.print("Humidity = ");
   Serial.print(bme.readHumidity());
   Serial.println(" %");
@@ -164,9 +166,10 @@ void sendMessage(String message) {
     // Montando os parâmetros da requisição POST
     String postData = "chat_id=" + chatId + "&text=" + message;
     
-    // Enviando a requisição
+    // Enviando a requisição no metodo post
     int httpResponseCode = http.POST(postData);
-    
+
+    // Esperando a resposta do servidor
     if (httpResponseCode > 0) {
       String response = http.getString();
       Serial.println("Código de resposta: " + String(httpResponseCode));
