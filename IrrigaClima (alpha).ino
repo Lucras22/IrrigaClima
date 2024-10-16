@@ -1,3 +1,17 @@
+/* Fluxo do que o codigo faz:
+
+1. Conectar ao Wi-Fi.
+2. Inicializar os sensores (BME280, chuva, umidade do solo, UV).
+3. Loop principal:
+   a. Ler dados dos sensores.
+   b. Exibir dados no monitor serial.
+   c. Controlar o relé de irrigação com base nas leituras.
+   d. Montar uma mensagem com os dados.
+   e. Enviar a mensagem para o bot no Telegram.
+   f. Esperar 10 segundos e repetir o processo.
+   
+*/
+
 // incluindo bibliotecas
 #include <WiFi.h>
 #include <HTTPClient.h>
