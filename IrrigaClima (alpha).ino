@@ -108,21 +108,26 @@ void loop() {
   // Controle do relé de irrigação
   String irrigationStatus = "";
   
-  // Verifica se está chovendo
-  if (isRaining) {
-    digitalWrite(RELAY_PIN, LOW);  // Desativa a irrigação se estiver chovendo
-    irrigationStatus = "Irrigação desativada: Está chovendo.";
-  }
-  // Verifica a umidade do solo
-  else if (soilMoisturePercentage > 40) {
+  // Verifica a umidade do solo primeiro
+if (soilMoisturePercentage > 40) {
     digitalWrite(RELAY_PIN, LOW);  // Desativa a irrigação se o solo estiver úmido
     irrigationStatus = "Irrigação desativada: Solo com umidade suficiente.";
-  }
-  // Condições normais para ativar a irrigação
-  else {
+} 
+// Verifica se está chovendo
+else if (isRaining) {
+    digitalWrite(RELAY_PIN, LOW);  // Desativa a irrigação se estiver chovendo
+    irrigationStatus = "Irrigação desativada: Está chovendo.";
+} 
+// Verifica o índice UV
+else if (uvIndex <= 6) {
+    digitalWrite(RELAY_PIN, LOW);  // Desativa a irrigação se o índice UV for 6 ou menor
+    irrigationStatus = "Irrigação desativada: Índice UV abaixo de 7.";
+} 
+// Condições normais para ativar a irrigação
+else {
     digitalWrite(RELAY_PIN, HIGH);  // Ativa a irrigação se todas as condições forem atendidas
     irrigationStatus = "Irrigação ativada: Condições ambientais necessitam irrigação.";
-  }
+}
 
   // Exibindo os dados no monitor serial
   Serial.println("Dados dos Sensores:");
