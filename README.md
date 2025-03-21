@@ -64,8 +64,10 @@ Este projeto pode ser adaptado para atender a diferentes tipos de cultivos e con
 <img src="https://babbf25fa0.cbaul-cdnwnd.com/ca777225d6fbd038fc560b5e3ff1f1e0/200000028-933ec933ee/imagem_2024-09-15_172730375.png?ph=babbf25fa0" alt="Prototipagem beta" width="1000"/>
 
 
-
 ## Fase Avançada Prototipagem:
 
 <img src="https://github.com/user-attachments/assets/3f9993af-c654-4991-8046-f82a45742108" alt="Prototipagem avançada" width="500"/>
 
+## Fase Avançada Simulador:
+
+<img src="https://github.com/user-attachments/assets/ff920fd0-5fb9-4136-a09b-e333b5e58527" alt="simulador beta" width="1000"/>
